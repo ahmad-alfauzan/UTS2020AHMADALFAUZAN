@@ -1,0 +1,115 @@
+package ac.id.atmaluhur.uts_amub_ti7j_1711500092_ahmadalfauzan;
+
+import android.content.ContentResolver;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
+import android.webkit.MimeTypeMap;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
+
+public class RegisterTwoActivity extends AppCompatActivity {
+    ImageView picPhoto;
+    EditText hobbi,alamat;
+    ImageButton register2,add_photo;
+
+    DatabaseReference ref;
+    StorageReference stor;
+    Uri photo_location;
+    Integer photo_max = 1;
+
+    String USERNAME_KEY = "usernamekey";
+        String username_key = "";
+    String username_key_new = "";
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_register_two);
+        
+        getUsernameLocal();
+        picPhoto = findViewById(R.id.pic_photo);
+        add_photo = findViewById(R.id.bt_add_photo);
+        register2 = findViewById(R.id.bt_regis2);
+        alamat = findViewById(R.id.ed_alamat);
+        hobbi = findViewById(R.id.ed_hobi);
+
+        add_photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                findPhoto();
+            }
+        });
+
+        register2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ref = FirebaseDatabase.getInstance().getReference().child("Users").child(username_key_new);
+                stor = FirebaseStorage.getInstance().getReference().child("Photousers").child(username_key_new);
+
+                if (photo_location != null) {
+                    StorageReference storageReference1 = stor.child(System.currentTimeMillis() + "." + getFileExtension(photo_location));
+                    storageReference1.putFile(photo_location)
+                            .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
+                                    String uri_photo = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
+                                    ref.getRef().child("url_photo_profile").setValue(uri_photo);
+                                    ref.getRef().child("hobi").setValue(hobbi.getText().toString());
+                                    ref.getRef().child("alamat").setValue(alamat.getText().toString());
+                                }
+                            })
+                            .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                            Intent gotosuccess = new Intent(RegisterTwoActivity.this, MainActivity.class);
+                            startActivity(gotosuccess);
+                        }
+                    });
+                }
+            }
+        });
+    }
+    String getFileExtension(Uri uri) {
+        ContentResolver contentResolver = getContentResolver();
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
+    }
+    public void findPhoto() {
+        Intent pic = new Intent();
+        pic.setType("image/* ");
+        pic.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(pic, photo_max);
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == photo_max && resultCode == RESULT_OK && data != null && data.getData() !=null) {
+            photo_location = data.getData();
+            Picasso.with(this).load(photo_location).centerCrop().fit().into(picPhoto);
+        }
+    }
+    public void getUsernameLocal() {
+        SharedPreferences sharedPreferences = getSharedPreferences(USERNAME_KEY, MODE_PRIVATE);
+        username_key_new = sharedPreferences.getString(username_key,"");
+    }
+}

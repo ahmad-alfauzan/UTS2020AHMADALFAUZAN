@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "680757451035",
+    "firebase_url": "https://utsahmadalfauzan.firebaseio.com",
+    "project_id": "utsahmadalfauzan",
+    "storage_bucket": "utsahmadalfauzan.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:680757451035:android:3af8c6f708fc2ce1bb5bbe",
+        "android_client_info": {
+          "package_name": "ac.id.atmaluhur.uts_amub_ti7j_1711500092_ahmadalfauzan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "680757451035-c3na5po0oe3v7dre2a225d8hsqpfvt2h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ac.id.atmaluhur.uts_amub_ti7j_1711500092_ahmadalfauzan",
+            "certificate_hash": "4777259dea142a299dd19ff17055f8d2565b08db"
+          }
+        },
+        {
+          "client_id": "680757451035-lcm90oecaj9s6uievrla1lve1eic0j7o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaDMmyHkvikkAr5tXY12G5zt6lts8d_Tk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "680757451035-lcm90oecaj9s6uievrla1lve1eic0j7o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
