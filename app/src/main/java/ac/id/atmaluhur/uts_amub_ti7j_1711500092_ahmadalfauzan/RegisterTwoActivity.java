@@ -26,14 +26,16 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 public class RegisterTwoActivity extends AppCompatActivity {
-    ImageView pic_photo_register_user;
-    ImageButton btn_continue,btn_add_photo;
-    EditText hobby, alamat;
+    ImageView pic_photo;
+    ImageButton bt_regis,bt_add;
+    EditText hobbi, alamat;
     EditText username, password, email;
     DatabaseReference reference;
+
     String USERNAME_KEY = " usernamekey";
     String username_key = "";
     String username_key_new = "";
+
     Uri photo_location;
     Integer photo_max = 1;
     StorageReference storage;
@@ -48,10 +50,10 @@ public class RegisterTwoActivity extends AppCompatActivity {
 
         getUsernameLocal();
         bt_add = findViewById(R.id.bt_add_photo);
-        hobby = findViewById(R.id.ed_hobi);
+        hobbi = findViewById(R.id.ed_hobi);
         alamat = findViewById(R.id.ed_email);
-        pic_photo_register_user = findViewById(R.id.pic_photo);
-        btn_continue = findViewById(R.id.bt_regis2);
+        pic_photo = findViewById(R.id.pic_photo);
+        bt_regis = findViewById(R.id.bt_regis2);
 
         bt_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +62,7 @@ public class RegisterTwoActivity extends AppCompatActivity {
             }
         });
 
-        btn_continue.setOnClickListener(new View.OnClickListener() {
+        bt_regis.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 reference = FirebaseDatabase.getInstance().getReference().child("Users/ahmad alfauzan");
@@ -72,7 +74,7 @@ public class RegisterTwoActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             String uri_photo = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
-                            reference.getRef().child("hobi").setValue(hobby.getText().toString());
+                            reference.getRef().child("hobi").setValue(hobbi.getText().toString());
                             reference.getRef().child("alamat").setValue(alamat.getText().toString());
                         }
                     }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
@@ -111,7 +113,7 @@ public class RegisterTwoActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == photo_max && resultCode == RESULT_OK && data!= null && data.getData() != null) {
             photo_location = data.getData();
-            Picasso.with(this).load(photo_location).centerCrop().fit().into(pic_photo_register_user);
+            Picasso.with(this).load(photo_location).centerCrop().fit().into(pic_photo);
         }
     }
 }
