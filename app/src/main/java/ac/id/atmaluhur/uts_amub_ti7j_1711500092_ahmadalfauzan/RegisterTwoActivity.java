@@ -47,13 +47,13 @@ public class RegisterTwoActivity extends AppCompatActivity {
         email = findViewById(R.id.ed_email);
 
         getUsernameLocal();
-        btn_add_photo = findViewById(R.id.bt_add_photo);
+        bt_add = findViewById(R.id.bt_add_photo);
         hobby = findViewById(R.id.ed_hobi);
         alamat = findViewById(R.id.ed_email);
         pic_photo_register_user = findViewById(R.id.pic_photo);
         btn_continue = findViewById(R.id.bt_regis2);
 
-        btn_add_photo.setOnClickListener(new View.OnClickListener() {
+        bt_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 findPhoto();
@@ -63,8 +63,8 @@ public class RegisterTwoActivity extends AppCompatActivity {
         btn_continue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                reference = FirebaseDatabase.getInstance().getReference().child("User/Ahmad ALFauzan");
-                storage = FirebaseStorage.getInstance().getReference().child("Photousers/Ahmad Alfauzan");
+                reference = FirebaseDatabase.getInstance().getReference().child("Users/ahmad alfauzan");
+                storage = FirebaseStorage.getInstance().getReference().child("Photousers");
 
                 if(photo_location != null) {
                     StorageReference storageReference1 = storage.child(System.currentTimeMillis() + "."+ getFileExtension(photo_location));
@@ -72,7 +72,7 @@ public class RegisterTwoActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             String uri_photo = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
-                            reference.getRef().child("hobby").setValue(hobby.getText().toString());
+                            reference.getRef().child("hobi").setValue(hobby.getText().toString());
                             reference.getRef().child("alamat").setValue(alamat.getText().toString());
                         }
                     }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
