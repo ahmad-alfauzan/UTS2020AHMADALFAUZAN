@@ -26,65 +26,76 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 public class RegisterTwoActivity extends AppCompatActivity {
-    ImageView pic_photo;
-    ImageButton bt_regis,bt_add;
-    EditText hobbi, alamat;
-    EditText username, password, email;
-    DatabaseReference reference;
-
-    String USERNAME_KEY = " usernamekey";
-    String username_key = "";
-    String username_key_new = "";
+    ImageView pic_photo_register_user;
+    ImageButton img_btn_register2, img_btn_add_photo;
+    EditText ed_hobi, ed_alamat;
 
     Uri photo_location;
     Integer photo_max = 1;
+
+    DatabaseReference reference;
     StorageReference storage;
+
+    String USERNAME_KEY = "usernamekey";
+    String username_key = "";
+    String username_key_new = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_two);
-        username = findViewById(R.id.ed_username);
-        password = findViewById(R.id.ed_password);
-        email = findViewById(R.id.ed_email);
 
         getUsernameLocal();
-        bt_add = findViewById(R.id.bt_add_photo);
-        hobbi = findViewById(R.id.ed_hobi);
-        alamat = findViewById(R.id.ed_email);
-        pic_photo = findViewById(R.id.pic_photo);
-        bt_regis = findViewById(R.id.bt_regis2);
+        pic_photo_register_user = findViewById(R.id.pic_photo);
+        img_btn_add_photo = findViewById(R.id.bt_add_photo);
+        img_btn_register2 = findViewById(R.id.bt_regis2);
+        ed_hobi = findViewById(R.id.ed_hobi);
+        ed_alamat = findViewById(R.id.ed_alamat);
 
-        bt_add.setOnClickListener(new View.OnClickListener() {
+        img_btn_add_photo.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 findPhoto();
             }
         });
 
-        bt_regis.setOnClickListener(new View.OnClickListener() {
+        img_btn_register2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                reference = FirebaseDatabase.getInstance().getReference().child("Users/ahmad alfauzan");
-                storage = FirebaseStorage.getInstance().getReference().child("Photousers");
+                reference = FirebaseDatabase.getInstance().getReference().child("Users/ahmad alfauzan").child(username_key);
+                storage = FirebaseStorage.getInstance().getReference().child("Photousers/");
 
-                if(photo_location != null) {
-                    StorageReference storageReference1 = storage.child(System.currentTimeMillis() + "."+ getFileExtension(photo_location));
-                    storageReference1.putFile(photo_location).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            String uri_photo = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
-                            reference.getRef().child("hobi").setValue(hobbi.getText().toString());
-                            reference.getRef().child("alamat").setValue(alamat.getText().toString());
-                        }
-                    }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                if (photo_location != null) {
+                    final StorageReference storageReference1 =
+                            storage.child(System.currentTimeMillis() + "." + getFileExtension(photo_location));storageReference1.putFile(photo_location)
+                            .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                    storageReference1.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                        @Override
+                                        public void onSuccess(Uri uri) {
+                                            String uri_photo = uri.toString();
+                                            reference.getRef().child("url_photo_profile").setValue(uri_photo);
+                                            reference.getRef().child("hobi").setValue(ed_hobi.getText().toString());
+                                            reference.getRef().child("alamat").setValue(ed_alamat.getText().toString());
+                                        }
+                                    }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Uri> task) {
+                                            Intent gotosuccess = new Intent(RegisterTwoActivity.this, MainActivity.class);
+                                            startActivity(gotosuccess);
+                                        }
+                                    });
+                                }
+                            }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                            Intent gotoregister2register = new Intent(RegisterTwoActivity.this, MainActivity.class);
-                            startActivity(gotoregister2register);
+                            Intent gotosuccess = new Intent(RegisterTwoActivity.this, MainActivity.class);
+                            startActivity(gotosuccess);
                         }
                     });
                 }
+
             }
         });
     }
@@ -104,16 +115,15 @@ public class RegisterTwoActivity extends AppCompatActivity {
 
     public void getUsernameLocal() {
         SharedPreferences sharedPreferences = getSharedPreferences(USERNAME_KEY, MODE_PRIVATE);
-        username_key_new = sharedPreferences.getString(username_key, "");
+        username_key = sharedPreferences.getString(username_key_new,"");
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == photo_max && resultCode == RESULT_OK && data!= null && data.getData() != null) {
+        super.onActivityResult(requestCode, resultCode,data);
+        if (requestCode == photo_max && resultCode == RESULT_OK && data != null && data.getData() !=null) {
             photo_location = data.getData();
-            Picasso.with(this).load(photo_location).centerCrop().fit().into(pic_photo);
+            Picasso.with(this).load(photo_location).centerCrop().fit().into(pic_photo_register_user);
         }
     }
 }
